@@ -10,7 +10,6 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/AndroidRipperApp" />
             <option value="$PROJECT_DIR$/AndroidRipperCommon" />
-            <option value="$PROJECT_DIR$/AndroidRipperCommon/robotium" />
             <option value="$PROJECT_DIR$/AndroidRipperDriver" />
             <option value="$PROJECT_DIR$/AndroidRipperService" />
           </set>
