@@ -36,6 +36,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
@@ -89,7 +90,7 @@ public class AndroidRipperStarter {
 	/**
 	 * Version
 	 */
-	public final static String VERSION = "2017.10";
+	public final static String VERSION = LocalDateTime.now().toString();
 
 	/**
 	 * Configuration

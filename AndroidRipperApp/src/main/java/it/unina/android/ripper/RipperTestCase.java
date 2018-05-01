@@ -19,6 +19,7 @@
 
 package it.unina.android.ripper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -405,6 +406,8 @@ public class RipperTestCase extends ActivityInstrumentationTestCase2 {
 				}
 				Log.v(TAG, "END_EVENT["+uid+"|"+System.currentTimeMillis()+"]");
 			} else if (msg.isTypeOf(MessageType.END_MESSAGE)) {
+				Log.v(TAG, "Dumping coverageFile");
+				generateCoverageReport(System.currentTimeMillis()+"_coverage.ec");
 				testRunning = false;
 				mService.send(Message.getAckMessage());
 			} else {
@@ -415,4 +418,36 @@ public class RipperTestCase extends ActivityInstrumentationTestCase2 {
 		}
 
 	};
+
+	private void generateCoverageReport(String filename) {
+		java.io.File coverageFile = new java.io.File("/mnt/sdcard/"+Configuration.PACKAGE_NAME, filename);
+
+		Log.d(TAG, "generateCoverageReport(): " + coverageFile.getAbsolutePath());
+		// We may use this if we want to avoid reflection and we include
+		// emma.jar
+		// RT.dumpCoverageData(coverageFile, false, false);
+
+		// Use reflection to call emma dump coverage method, to avoid
+		// always statically compiling against emma jar
+		try {
+			Class<?> emmaRTClass = Class.forName("com.vladium.emma.rt.RT");
+			Method dumpCoverageMethod = emmaRTClass.getMethod(
+					"dumpCoverageData", coverageFile.getClass(), boolean.class,
+					boolean.class);
+			dumpCoverageMethod.invoke(null, coverageFile, false, false);
+			Log.v(TAG, "Coverage dumped");
+		} catch (ClassNotFoundException e) {
+			Log.e(TAG, "Is emma jar on classpath?", e);
+		} catch (SecurityException e) {
+			Log.e(TAG, "Failed to generate EMMA coverage: ", e);
+		} catch (NoSuchMethodException e) {
+			Log.e(TAG, "Failed to generate EMMA coverage: ", e);
+		} catch (IllegalArgumentException e) {
+			Log.e(TAG, "Failed to generate EMMA coverage: ", e);
+		} catch (IllegalAccessException e) {
+			Log.e(TAG,"Failed to generate EMMA coverage: ", e);
+		} catch (InvocationTargetException e) {
+			Log.e(TAG, "Failed to generate EMMA coverage: ", e);
+		}
+	}
 }
