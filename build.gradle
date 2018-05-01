@@ -1,0 +1,21 @@
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+    }
+}
+
+subprojects {
+    group = 'it.unina.android'
+    buildscript {
+        repositories {
+            google()
+            jcenter()
+        }
+        dependencies {
+            classpath 'com.android.tools.build:gradle:3.1.2'
+        }
+    }
+}
+

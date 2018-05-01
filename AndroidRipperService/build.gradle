@@ -1,15 +1,26 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-buildscript {
-    repositories {
-        jcenter()
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion '27.0.3'
+
+    defaultConfig {
+        applicationId "it.unina.android.ripper_service"
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+        }
     }
 }
 
-allprojects {
-    repositories {
-        jcenter()
-    }
+dependencies {
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
 }

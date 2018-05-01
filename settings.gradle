@@ -1,0 +1,3 @@
+rootProject.name = 'AndroidRipper'
+include ':AndroidRipperApp', ':AndroidRipperService', 'AndroidRipperDriver', 'AndroidRipperCommon', 'AndroidRipperCommon:robotium'
+

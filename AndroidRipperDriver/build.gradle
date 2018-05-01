@@ -1,0 +1,23 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation files('libs/custom_gson_2.8.1.jar')
+    implementation files('libs/commons-lang3-3.5.jar')
+    implementation project(':AndroidRipperCommon')
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class' : 'it.unina.android.ripper.boundary.AndroidRipper'
+    }
+
+    from configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+
+    baseName = 'AndroidRipper'
+}
