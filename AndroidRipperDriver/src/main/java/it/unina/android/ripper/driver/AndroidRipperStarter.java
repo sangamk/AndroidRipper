@@ -494,7 +494,7 @@ public class AndroidRipperStarter {
 			} else if (driverType.equals(DRIVER_RANDOM)) {
 
 				try {
-					System.out.println(base_result_dir + "/random-seed.txt");
+					ConsoleLogger.info(base_result_dir + "/random-seed.txt");
 					Files.write(Paths.get(base_result_dir + "/random-seed.txt"), randomSeed.getBytes());
 				} catch (IOException e1) {
 					throw new RipperRuntimeException(AndroidRipperStarter.class, "startRipping", e1.getMessage(), e1);
@@ -619,7 +619,7 @@ public class AndroidRipperStarter {
 		if (eventListener != null) {
 			eventListener.ripperLog(line);
 		} else {
-			System.out.println("[" + System.currentTimeMillis() + "] " + line);
+			ConsoleLogger.info("[" + System.currentTimeMillis() + "] " + line);
 		}
 	}
 
@@ -804,11 +804,11 @@ public class AndroidRipperStarter {
 						String line = "";
 						BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 						while ((line = input.readLine()) != null) {
-							System.out.println(line);
+							ConsoleLogger.trace(line);
 						}
 						input.close();
 					} catch (Exception ex) {
-						// ex.printStackTrace();
+                        ConsoleLogger.error(ex.getMessage());
 					}
 				}
 			};
@@ -831,7 +831,7 @@ public class AndroidRipperStarter {
 			BufferedReader aaptReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String contentLine = "";
 			while ((contentLine = aaptReader.readLine()) != null) {
-				// System.out.println(contentLine);
+				// ConsoleLogger.info(contentLine);
 
 				if (ret[0] == null && contentLine.startsWith("package:")) {
 					int ind = contentLine.indexOf("name=") + "name='".length();
@@ -868,7 +868,7 @@ public class AndroidRipperStarter {
 				while ((line = reader.readLine()) != null) {
 					if (line.contains("targetActivity")) {
 						mainActivity = line.trim().split("\"")[1];
-						System.out.println(mainActivity);
+						ConsoleLogger.info(mainActivity);
 					} else if (line.contains("android.intent.category.LAUNCHER")) {
 						break;
 					}
@@ -915,7 +915,7 @@ public class AndroidRipperStarter {
 			String simpleClassName = mainActivityClass.substring(mainActivityClass.lastIndexOf('.') + 1).toLowerCase();
 			
 			if (RipperStringUtils.stringContainsItemFromList(simpleClassName, new String[] {"splash", "welcome", "intro", "loading", "logo"})) {
-				return "10000";
+				return "5000";
 			}
 		} catch (Throwable t) {
 			

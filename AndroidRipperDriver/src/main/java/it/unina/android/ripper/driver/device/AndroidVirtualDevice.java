@@ -50,8 +50,8 @@ public class AndroidVirtualDevice extends AbstractDevice {
 	@Override
 	public void stop() {
 		System.out.println("Shutdown AVD...");
-//		Actions.killEmulator();
-//		Actions.waitDeviceClosed();
+		Actions.killEmulator();
+		Actions.waitDeviceClosed();
 	}
 
 	@Override

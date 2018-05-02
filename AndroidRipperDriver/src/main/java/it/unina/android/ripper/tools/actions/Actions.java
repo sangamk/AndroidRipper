@@ -288,7 +288,7 @@ public class Actions {
 		try {
 			// AndroidTools.emulator("@"+AVD_NAME,"-partition-size","129","-no-snapshot-save",
 			// "-port",Integer.toString(EMULATOR_PORT)).connectStdout(System.out).connectStderr(System.out);
-			AndroidTools.emulator("@" + AVD_NAME, "-no-snapshot-load", "-wipe-data", "-no-snapshot-save", "-port",
+			AndroidTools.emulator("@" + AVD_NAME, "-no-snapshot-load", "-wipe-data", "-no-snapshot-save", "-port", "-no-boot-anim",
 					Integer.toString(EMULATOR_PORT)).connectStdout(System.out).connectStderr(System.out);
 
 			sleepSeconds(START_EMULATOR_SNAPSHOOT_WAIT_SECONDS);
