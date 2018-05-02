@@ -254,7 +254,7 @@ public class AndroidRipperStarter {
 
 			String logcatPath = base_result_dir + "/logcat/";
 			String xmlOutputPath = base_result_dir + "/model/";
-			
+			String coveragePath = base_result_dir + "/coverage/";
 		
 			// installer parameters
 			String aut_apk = apkToTest;
@@ -419,10 +419,9 @@ public class AndroidRipperStarter {
 			ripperInput = new it.unina.android.shared.ripper.input.XMLRipperInput();
 			ripperOutput = new it.unina.android.shared.ripper.output.XMLRipperOutput();
 
-			if (new java.io.File(logcatPath).exists() == false)
+			if (!new File(logcatPath).exists())
 				new java.io.File(logcatPath).mkdir();
-
-			if (new java.io.File(xmlOutputPath).exists() == false)
+			if (!new File(xmlOutputPath).exists())
 				new java.io.File(xmlOutputPath).mkdir();
 
 			long seedLong = System.currentTimeMillis();
@@ -534,7 +533,8 @@ public class AndroidRipperStarter {
 				driver.TOOLS_PATH=toolsPath;
 				driver.WAIT_AFTER_INSTALL=Integer.parseInt(wait_after_install);
 				driver.WAIT_BEFORE_INSTALL=Integer.parseInt(wait_before_install);
-				
+				driver.COVERAGE_PATH = coveragePath;
+
 				driver.MODEL_OUTPUT_ENABLE = model_output_enable;
 				
 				driver.SLEEP_BEFORE_START_RIPPING=Integer.parseInt(sleep_before_start_ripping);

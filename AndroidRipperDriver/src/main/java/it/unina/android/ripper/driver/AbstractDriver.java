@@ -19,17 +19,16 @@
 
 package it.unina.android.ripper.driver;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 import it.unina.android.ripper.driver.device.AbstractDevice;
 import it.unina.android.ripper.driver.exception.AckNotReceivedException;
 import it.unina.android.ripper.driver.exception.NullMessageReceivedException;
 import it.unina.android.ripper.driver.exception.RipperRuntimeException;
+import it.unina.android.ripper.logger.ConsoleLogger;
 import it.unina.android.ripper.net.RipperServiceSocket;
 import it.unina.android.ripper.observer.RipperEventListener;
 import it.unina.android.ripper.planner.Planner;
@@ -61,7 +60,7 @@ public abstract class AbstractDriver {
 	/**
 	 * TODO: parameter
 	 */
-	public static int SERVICE_HOST_PORT = 18888;
+	protected static int SERVICE_HOST_PORT = 18888;
 
 	/**
 	 * DeviceInterface
@@ -71,17 +70,17 @@ public abstract class AbstractDriver {
 	/**
 	 * Package of the AUT
 	 */
-	public String AUT_PACKAGE = "";
+	protected String AUT_PACKAGE = "";
 
 	/**
 	 * Model Output;
 	 */
-	public boolean MODEL_OUTPUT_ENABLE = false;
+	boolean MODEL_OUTPUT_ENABLE = false;
 	
 	/**
 	 * Main Activity Class of the AUT
 	 */
-	public String AUT_MAIN_ACTIVITY = "";
+	String AUT_MAIN_ACTIVITY = "";
 
 	/**
 	 * No reinstall
@@ -91,12 +90,12 @@ public abstract class AbstractDriver {
 	/**
 	 * Sleep time after each event
 	 */
-	public int SLEEP_AFTER_EVENT = 0;
+	protected int SLEEP_AFTER_EVENT = 0;
 
 	/**
 	 * Sleep time after each task
 	 */
-	public int SLEEP_AFTER_TASK = 0;
+	protected int SLEEP_AFTER_TASK = 0;
 
 	/**
 	 * Sleep time after each restart
@@ -106,27 +105,27 @@ public abstract class AbstractDriver {
 	/**
 	 * Sleep time before start ripping
 	 */
-	public int SLEEP_BEFORE_START_RIPPING = 0;
+	int SLEEP_BEFORE_START_RIPPING = 0;
 
 	/**
 	 * Report file name
 	 */
-	public String REPORT_FILE = "report.xml";
+	String REPORT_FILE = "report.xml";
 
 	/**
 	 * Prefix of the log file name
 	 */
-	public String LOG_FILE_PREFIX = "log_";
+	String LOG_FILE_PREFIX = "log_";
 
 	/**
 	 * PING message max retry number
 	 */
-	public int PING_MAX_RETRY = 10;
+	int PING_MAX_RETRY = 10;
 
 	/**
 	 * ACK message max retry number
 	 */
-	public int ACK_MAX_RETRY = 3;
+	int ACK_MAX_RETRY = 3;
 
 	/**
 	 * Send message failure threshold
@@ -303,6 +302,8 @@ public abstract class AbstractDriver {
 	 */
 	public boolean EXPLORATION_WATCHDOG_ENABLED = false;
 
+
+	public String COVERAGE_PATH;
 	/**
 	 * Constructor
 	 */
@@ -314,7 +315,7 @@ public abstract class AbstractDriver {
 	/**
 	 * Start Ripping Process
 	 */
-	public void startRipping() {
+	void startRipping() {
 		this.running = true;
 		this.finished = false;
 		notifyRipperLog("Start Ripping Loop...");
@@ -327,7 +328,7 @@ public abstract class AbstractDriver {
 	/**
 	 * Ripping Process Paused
 	 */
-	public boolean doPause = false;
+	private boolean doPause = false;
 
 	/**
 	 * Pause Ripping Process
@@ -355,7 +356,7 @@ public abstract class AbstractDriver {
 	 * 
 	 * @return
 	 */
-	public boolean isRunning() {
+	boolean isRunning() {
 		return this.running;
 	}
 
@@ -364,12 +365,12 @@ public abstract class AbstractDriver {
 	}
 
 	
-	public boolean isPaused = false;
+	private boolean isPaused = false;
 
 	/**
 	 * Sleep if Ripping Process is paused
 	 */
-	public boolean ifIsPausedDoPause() {
+	protected boolean ifIsPausedDoPause() {
 		boolean ret = false;
 
 		if (doPause) {
@@ -1001,15 +1002,15 @@ public abstract class AbstractDriver {
 	}
 
 	public void installAPKs() {
-		if (APK_INSTALLED == false) {
-			if (INSTALL_FROM_SDCARD == false) {
-				if (Actions.installAPK(TEMP_PATH + "/aut.apk") == false) {
+		if (!APK_INSTALLED) {
+			if (!INSTALL_FROM_SDCARD) {
+				if (!Actions.installAPK(TEMP_PATH + "/aut.apk")) {
 					// throw new RuntimeException("Install AUT APK Fail!");
 					throw new RipperRuntimeException(AbstractDriver.class, "startup", "Install AUT APK Fail!");
 				}
 
 				// Install RipperTestCase APK
-				if (Actions.installAPK(TEMP_PATH + "/ripper.apk") == false) {
+				if (!Actions.installAPK(TEMP_PATH + "/ripper.apk")) {
 					// throw new RuntimeException("Install Ripper APK Fail!");
 					throw new RipperRuntimeException(AbstractDriver.class, "startup", "Install Ripper APK Fail!");
 				}
@@ -1187,6 +1188,7 @@ public abstract class AbstractDriver {
 				notifyRipperLog("[AbstractDriver.handleEndOfLoop()] " + "rsSocket.disconnect(): " + ex.getMessage());
 			}
 
+			retrieveCodeCoverage();
 			shutdownDevice();
 
 			notifyRipperLog("Wait process end...");
@@ -1194,6 +1196,30 @@ public abstract class AbstractDriver {
 			notifyRipperLog("Wait test_case end...");
 
 		}
+	}
+
+	private void retrieveCodeCoverage() {
+		ConsoleLogger.info("Retrieving code coverage from " + AUT_PACKAGE);
+
+		boolean hasPulled = Actions.pullCoverageFiles(AUT_PACKAGE, RESULTS_PATH);
+
+		if (!hasPulled){
+            ConsoleLogger.warning("No code coverage files found!");
+            return;
+		}
+
+        ConsoleLogger.info("Generate coverage");
+		boolean reportGenerated = Actions.generateCoverageReport(COVERAGE_PATH, "c:/Master/Thesis/AndroidRipperTool/instr-dataset/"+AUT_PACKAGE+"/coverage.em");
+
+		if (!reportGenerated){
+		    return;
+        }
+
+		ConsoleLogger.info("Moving files");
+		Actions.moveCoverageFiles(RESULTS_PATH, AUT_PACKAGE);
+
+        ConsoleLogger.info("Deleting coverage files...");
+		Actions.removeCoverageFiles(AUT_PACKAGE);
 	}
 
 }

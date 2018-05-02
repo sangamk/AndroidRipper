@@ -19,12 +19,16 @@
 
 package it.unina.android.ripper.tools.actions;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import it.unina.android.ripper.logger.ConsoleLogger;
+import it.unina.android.ripper.tools.lib.EmmaTools;
 import org.apache.commons.lang3.ArrayUtils;
 
 import it.unina.android.ripper.tools.lib.AndroidTools;
@@ -174,7 +178,7 @@ public class Actions {
 			public void run() {
 				try {
 					ripperActive = true;
-					String pathToCoverage = String.format("/mnt/sdcard/%s_coverage.ec", AUT_PACKAGE, System.currentTimeMillis());
+					String pathToCoverage = String.format("/mnt/sdcard/%s/%s_coverage.ec", AUT_PACKAGE, System.currentTimeMillis());
 					WrapProcess adb = AndroidTools.adb("-s", DEVICE, "shell",
 										"am instrument -w -e coverageFile "+  pathToCoverage + " -e coverage true -e class it.unina.android.ripper.RipperTestCase it.unina.android.ripper/android.test.InstrumentationTestRunner")
 								.connectStdout(System.out).connectStderr(System.out).waitFor();
@@ -1060,5 +1064,150 @@ public class Actions {
 			//// e.printStackTrace();
 		}
 	}
-	
+
+    public static boolean pullCoverageFiles(String aut_package, String destination) {
+        try {
+
+
+
+            String baseCoverageLocation = "/mnt/sdcard/" + aut_package + "/";
+            String tempCoverageLocation = baseCoverageLocation+"/coverage/";
+
+            boolean foundFiles = hasFiles(baseCoverageLocation, "*.ec", "No such file or directory");
+
+            if (foundFiles){
+                return false;
+            }
+
+            ConsoleLogger.info("Coverage files found");
+            AndroidTools.adb("-s", DEVICE, "shell", "mkdir", tempCoverageLocation);
+            AndroidTools.adb("-s", DEVICE, "shell", "mv", baseCoverageLocation+"/*.ec", tempCoverageLocation);
+			ConsoleLogger.debug("Destination " + destination);
+            WrapProcess p = AndroidTools.adb("pull", tempCoverageLocation, destination);
+            p.waitFor();
+
+            return true;
+        } catch (Exception e) {
+            ConsoleLogger.error("Failed to pull coverage files: ");
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean removeCoverageFiles(String aut_package){
+        String baseCoverageLocation = "/mnt/sdcard/" + aut_package + "/";
+
+        try{
+            AndroidTools.adb("-s", DEVICE, "shell", "rm", "-r", baseCoverageLocation);
+
+            return true;
+        }catch (Exception e){
+	        ConsoleLogger.warning("Failed to remove coverage files");
+        }
+        return false;
+    }
+
+    private static boolean hasFiles(String path, String extension, String foundCondition){
+	    try{
+	        ConsoleLogger.info("Searching for files "+ path+extension);
+            WrapProcess p = AndroidTools.adb("-s", DEVICE, "shell", "ls", path+extension);
+            try {
+                String line;
+                BufferedReader input = new BufferedReader(new InputStreamReader(p.getStdout()));
+
+                while ((line = input.readLine()) != null) {
+                    ConsoleLogger.debug(line);
+                    if (line.contains(foundCondition)) {
+                        return true;
+                    }
+                }
+
+                input.close();
+                p.waitFor();
+            }catch (Exception e){
+                throw e;
+            }
+
+        }catch (Exception e){
+	        ConsoleLogger.error("Failed to retrieve files: " + path+extension);
+	        e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean generateCoverageReport(String coverageEcDirectoryLocation, String coverageEmLocation) {
+
+	    File coverageEm = new File(coverageEmLocation);
+
+	    if (!coverageEm.exists()){
+	        ConsoleLogger.warning("No " + coverageEmLocation + " found!");
+	        return false;
+        }
+
+        try {
+            List<Path> coverageEcFiles = Files.list(Paths.get(coverageEcDirectoryLocation))
+                    .collect(Collectors.toList());
+
+            if (coverageEcFiles.isEmpty()){
+                ConsoleLogger.warning("No coverage ec files found");
+                return false;
+            }
+
+            coverageEcFiles.add(Paths.get(coverageEmLocation));
+            List<String> emmaFileOptions = addEmmaFileInOptions(coverageEcFiles);
+
+            String[] emmaFileOptionsArray = new String[emmaFileOptions.size()];
+            emmaFileOptionsArray = emmaFileOptions.toArray(emmaFileOptionsArray);
+
+            WrapProcess p = EmmaTools.report(emmaFileOptionsArray);
+            printOutput(p);
+            p.waitFor();
+
+        } catch (Exception e) {
+            ConsoleLogger.error("Failed to generate coverage");
+            e.printStackTrace();
+	    }
+
+        return false;
+    }
+
+    public static boolean moveCoverageFiles(String destination, String packageName){
+
+        try {
+            Files.move(Paths.get("coverage.txt"), Paths.get(destination+"/coverage/coverage.txt"), StandardCopyOption.REPLACE_EXISTING);
+            Files.move(Paths.get("coverage.xml"), Paths.get(destination+"/coverage/coverage.xml"), StandardCopyOption.REPLACE_EXISTING);
+            Files.move(Paths.get("./coverage"), Paths.get(destination+"/coverage/html_report"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(Paths.get("./instr-dataset/"+packageName+"/coverage.em"), Paths.get(destination+"/coverage/coverage.em"), StandardCopyOption.REPLACE_EXISTING);
+            return true;
+        } catch (IOException e) {
+            ConsoleLogger.error("Failed to move files");
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private static List<String> addEmmaFileInOptions(List<Path> ecFiles){
+	    List<String> filesWithOptions = new ArrayList<>();
+	    ecFiles.forEach(x -> {
+            filesWithOptions.add("-in");
+            filesWithOptions.add(x.toString());
+        });
+	    return filesWithOptions;
+    }
+
+    private static void printOutput(WrapProcess p){
+        try {
+            String line;
+            BufferedReader input = new BufferedReader(new InputStreamReader(p.getStdout()));
+
+            while ((line = input.readLine()) != null) {
+                ConsoleLogger.trace(line);
+            }
+
+            input.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

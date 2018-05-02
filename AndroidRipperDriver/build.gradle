@@ -10,6 +10,7 @@ dependencies {
     implementation files('libs/custom_gson_2.8.1.jar')
     implementation files('libs/commons-lang3-3.5.jar')
     implementation project(':AndroidRipperCommon')
+    implementation group: 'org.fusesource.jansi', name: 'jansi', version: '1.17.1'
 }
 
 jar {

@@ -19,12 +19,21 @@
 
 package it.unina.android.ripper.boundary;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import it.unina.android.ripper.driver.AndroidRipperStarter;
 import it.unina.android.ripper.driver.exception.RipperUncaughtExceptionHandler;
+import it.unina.android.ripper.logger.ConsoleLogger;
 import it.unina.android.ripper.observer.RipperEventListener;
+import it.unina.android.ripper.tools.lib.EmmaTools;
+import it.unina.android.ripper.tools.lib.WrapProcess;
 
 /**
  * Entry Point of Android Ripper
@@ -50,7 +59,8 @@ public class AndroidRipper implements RipperEventListener {
 	 */
 	public static void main(String[] args) {
 
-		boolean noProblem = false;
+
+        boolean noProblem = false;
 
 		System.out.println("Android Ripper");
 
@@ -123,16 +133,9 @@ public class AndroidRipper implements RipperEventListener {
 		System.out.println();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * it.unina.android.ripper.observer.RipperEventListener#ripperLog(java.lang.
-	 * String)
-	 */
 	@Override
 	public void ripperLog(String log) {
-		println(log);
+		ConsoleLogger.info(log);
 	}
 
 	/*
@@ -144,7 +147,7 @@ public class AndroidRipper implements RipperEventListener {
 	 */
 	@Override
 	public void ripperStatusUpdate(String status) {
-		println(status);
+		ConsoleLogger.info(status);
 	}
 
 	/*
@@ -165,23 +168,13 @@ public class AndroidRipper implements RipperEventListener {
 	 */
 	@Override
 	public void ripperEneded() {
-		println("Ripper Ended!");
+		ConsoleLogger.info("Ripper Ended!");
 		System.exit(0);
-	}
-
-	/**
-	 * Print a formatted debug line
-	 * 
-	 * @param line
-	 *            line to print
-	 */
-	protected void println(String line) {
-		System.out.println("[" + System.currentTimeMillis() + "] " + line);
 	}
 
 	@Override
 	public void ripperPaused() {
-		println("Ripper Paused!");
+		ConsoleLogger.info("Ripper Paused!");
 		System.out.println("Press \"ENTER\" to continue...");
 		new Thread() {
 			@Override

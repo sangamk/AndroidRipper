@@ -57,6 +57,20 @@ public class OSSpecific {
 			
 		return new String[]{"android","list", "avd"};
 	}
+
+	public static String[] getJavaCommand(){
+		if (isWindows()) {
+			return new String[]{"cmd","/C","java"};
+		} else if (isMac()) {
+			//TODO
+		} else if (isUnix()) {
+			//TODO
+		} else if (isSolaris()) {
+			//TODO
+		}
+
+		return new String[]{"java"};
+	}
  
 	public static boolean isWindows() {
 		return (OS.indexOf("win") >= 0);
