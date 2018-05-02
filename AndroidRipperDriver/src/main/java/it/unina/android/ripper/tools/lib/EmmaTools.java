@@ -1,7 +1,5 @@
 package it.unina.android.ripper.tools.lib;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -18,11 +16,10 @@ public class EmmaTools extends CommandLineTools{
         List<String> emmaOptions = Stream.concat(emmaReportOptions.stream(), ecFilesOptions.stream())
                 .collect(Collectors.toList());
 
+        // UNIX users can add a field
         if (getOsFamily().equals("windows")) {
             return start("cmd", emmaOptions);
-        } else if (getOsFamily().equals("unix")) {
-            throw new NotImplementedException();
-        } else {
+        } else  {
             throw new IllegalStateException("Can't infer your OS family.  Please set the " + "os-family" + " system property to one of 'windows', 'unix'.");
         }
     }

@@ -41,6 +41,10 @@ public class ConsoleLogger {
         }
     }
 
+    public static void level(ConsoleLoggerLevel level){
+        logLevel = level;
+    }
+
     private static void write(String message, Ansi.Color color){
         AnsiConsole.systemInstall();
         System.out.println( ansi().fgBright(color).a(timeStampMessage(message)).reset() );

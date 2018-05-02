@@ -538,9 +538,9 @@ public class Actions {
 	 */
 	public static void waitForDevice() {
 		waitForDeviceOnline();
-		System.out.println("Device " + DEVICE + " Online!");
+		ConsoleLogger.info("Device " + DEVICE + " Online!");
 		waitForDeviceBoot();
-		System.out.println("Device " + DEVICE + " Booted!");
+		ConsoleLogger.info("Device " + DEVICE + " Booted!");
 	}
 
 	/**
@@ -585,7 +585,7 @@ public class Actions {
 
 		} while (waitingDeviceClose);
 
-		System.out.println("Device offline!");
+		ConsoleLogger.info("Device offline!");
 
 	}
 
@@ -657,10 +657,10 @@ public class Actions {
 
 				while ((line = input.readLine()) != null) {
 					if (line.startsWith("Failure")) {
-						System.out.println(line);
-						System.out.println("Failed Installing APK");
+						ConsoleLogger.info(line);
+						ConsoleLogger.error("Failed Installing APK");
 						if (line.contains("INSTALL_FAILED_NO_MATCHING_ABIS")) {
-							System.out.println("System Architecture (ARM/x86) not compatible!");
+							ConsoleLogger.error("System Architecture (ARM/x86) not compatible!");
 						}
 						return false;
 					}
@@ -672,7 +672,7 @@ public class Actions {
 			}
 
 			p.waitFor();
-//			System.out.println(apk +" installed!");
+//			ConsoleLogger.info(apk +" installed!");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			//// e.printStackTrace();
@@ -770,7 +770,7 @@ public class Actions {
 
 				while ((line = input.readLine()) != null) {
 					if (line.contains("(top-activity)")) {
-						// System.out.println(line);
+						// ConsoleLogger.info(line);
 						if (line.contains(pack)) {
 							return true;
 						}
@@ -780,7 +780,7 @@ public class Actions {
 				input.close();
 			} catch (Exception ex) {
 				// ex.printStackTrace();
-				System.out.println(ex.getMessage());
+				ConsoleLogger.error(ex.getMessage());
 			}
 
 			p.waitFor();
@@ -813,7 +813,7 @@ public class Actions {
 				input.close();
 			} catch (Exception ex) {
 				// ex.printStackTrace();
-				System.out.println(ex.getMessage());
+				ConsoleLogger.error(ex.getMessage());
 			}
 
 			p.waitFor();
@@ -856,14 +856,14 @@ public class Actions {
 				input.close();
 			} catch (Exception ex) {
 				// ex.printStackTrace();
-				System.out.println(ex.getMessage());
+				ConsoleLogger.error(ex.getMessage());
 			}
 
 			p.waitFor();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println(e.getMessage());
+			ConsoleLogger.error(e.getMessage());
 		}
 
 		return ip;
@@ -884,7 +884,7 @@ public class Actions {
 				
 			} catch (Exception ex) {
 				// ex.printStackTrace();
-				System.out.println(ex.getMessage());
+				ConsoleLogger.error(ex.getMessage());
 			}
 
 			p.waitFor();
@@ -915,7 +915,7 @@ public class Actions {
 				input.close();
 			} catch (Exception ex) {
 				// ex.printStackTrace();
-				System.out.println(ex.getMessage());
+				ConsoleLogger.error(ex.getMessage());
 			}
 
 			p.waitFor();
@@ -960,7 +960,7 @@ public class Actions {
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println(e.getMessage());
+			ConsoleLogger.error(e.getMessage());
 		}
 
 		if (displayOn && unlocked)
@@ -1046,7 +1046,7 @@ public class Actions {
 				p =AndroidTools.adb("-s", DEVICE, "shell", "pm", "install", "-f", "-g", "/sdcard/"+string).connectStderr(System.out).connectStdout(System.out);
 			}
 			p.waitFor();
-			System.out.println(string +" installed!");
+			ConsoleLogger.info(string +" installed!");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1163,6 +1163,7 @@ public class Actions {
             printOutput(p);
             p.waitFor();
 
+            return true;
         } catch (Exception e) {
             ConsoleLogger.error("Failed to generate coverage");
             e.printStackTrace();

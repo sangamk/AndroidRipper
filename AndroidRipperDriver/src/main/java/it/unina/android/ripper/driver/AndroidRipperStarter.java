@@ -54,6 +54,8 @@ import it.unina.android.ripper.driver.systematic.SystematicDriver;
 import it.unina.android.ripper.installer.OSSpecific;
 import it.unina.android.ripper.installer.SearchableManifest;
 import it.unina.android.ripper.installer.ZipUtils;
+import it.unina.android.ripper.logger.ConsoleLogger;
+import it.unina.android.ripper.logger.ConsoleLoggerLevel;
 import it.unina.android.ripper.observer.RipperEventListener;
 import it.unina.android.ripper.planner.Planner;
 import it.unina.android.ripper.scheduler.BreadthScheduler;
@@ -229,7 +231,10 @@ public class AndroidRipperStarter {
 			String wait_after_install = conf.getProperty("sleep_after_install", "0");
 			String wait_before_install = conf.getProperty("sleep_before_install", "0");
 			String wait_after_manual_sequence = conf.getProperty("sleep_after_manual_sequence", "0");
-			
+			String log_level = conf.getProperty("log_level", "INFO");
+
+			InitialiseConsoleLogger(log_level);
+
 			if (target != null && target.equals("device") && (device == null || device.equals(""))) {
 				throw new RipperRuntimeException(AndroidRipperStarter.class, "startRipping", "No Device SET!");
 			}
@@ -573,6 +578,15 @@ public class AndroidRipperStarter {
 			throw new RipperRuntimeException(AndroidRipperStarter.class, "startRipping", "Missing configuration file!");
 		}
 
+	}
+
+	private void InitialiseConsoleLogger(String logLevel) {
+		try {
+			ConsoleLogger.level(ConsoleLoggerLevel.valueOf(logLevel));
+			ConsoleLogger.info("Console logger set to level "+logLevel);
+		}catch (Exception e){
+			ConsoleLogger.error("Invalid log level");
+		}
 	}
 
 	/**
