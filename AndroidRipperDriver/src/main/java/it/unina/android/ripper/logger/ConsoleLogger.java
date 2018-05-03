@@ -12,13 +12,13 @@ public class ConsoleLogger {
 
     public static void trace(String message){
         if (logLevel.isSmallerOrEqualThan(ConsoleLoggerLevel.TRACE)) {
-            write(message, MAGENTA);
+            write(message, CYAN);
         }
     }
 
     public static void debug(String message){
         if (logLevel.isSmallerOrEqualThan(ConsoleLoggerLevel.DEBUG)) {
-            write(message, CYAN);
+            write(message, MAGENTA);
         }
     }
 

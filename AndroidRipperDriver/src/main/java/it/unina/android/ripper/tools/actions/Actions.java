@@ -288,13 +288,13 @@ public class Actions {
 		try {
 			// AndroidTools.emulator("@"+AVD_NAME,"-partition-size","129","-no-snapshot-save",
 			// "-port",Integer.toString(EMULATOR_PORT)).connectStdout(System.out).connectStderr(System.out);
-			AndroidTools.emulator("@" + AVD_NAME, "-no-snapshot-load", "-wipe-data", "-no-snapshot-save", "-port", "-no-boot-anim",
+			AndroidTools.emulator("@" + AVD_NAME, "-no-snapshot-load", "-wipe-data", "-no-snapshot-save", "-port",
 					Integer.toString(EMULATOR_PORT)).connectStdout(System.out).connectStderr(System.out);
 
 			sleepSeconds(START_EMULATOR_SNAPSHOOT_WAIT_SECONDS);
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch blockabstract
 			// e.printStackTrace();
 		}
 	}
@@ -1080,10 +1080,17 @@ public class Actions {
             }
 
             ConsoleLogger.info("Coverage files found");
-            AndroidTools.adb("-s", DEVICE, "shell", "mkdir", tempCoverageLocation);
-            AndroidTools.adb("-s", DEVICE, "shell", "mv", baseCoverageLocation+"/*.ec", tempCoverageLocation);
+            WrapProcess makeDirectory = AndroidTools.adb("-s", DEVICE, "shell", "mkdir", tempCoverageLocation);
+            printOutput(makeDirectory);
+            makeDirectory.waitFor();
+
+            WrapProcess moveFiles = AndroidTools.adb("-s", DEVICE, "shell", "mv", baseCoverageLocation+"/*.ec", tempCoverageLocation);
+            printOutput(moveFiles);
+            moveFiles.waitFor();
+
 			ConsoleLogger.debug("Destination " + destination);
             WrapProcess p = AndroidTools.adb("pull", tempCoverageLocation, destination);
+            printOutput(p);
             p.waitFor();
 
             return true;
