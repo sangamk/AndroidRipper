@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.Buffer;
 import java.nio.CharBuffer;
 import java.util.HashSet;
 import java.util.Set;
@@ -125,9 +126,9 @@ public class WrapProcess {
 				CharBuffer cb = CharBuffer.wrap(new char [256]);
 				try {
 					while (source.read(cb) != -1) {
-						cb.flip();
+						((Buffer)cb).flip();
 						sink.append(cb);
-						cb.clear();
+						((Buffer)cb).clear();
 					}
 
 					if (sink instanceof Flushable) {

@@ -366,6 +366,8 @@ public class AndroidRipperStarter {
 								|| ZipUtils.containsDirectory(aut_apk, "lib/armeabi-v7a")
 								|| ZipUtils.containsDirectory(aut_apk, "lib/arm64-v8a")) {
 							avd_name = avd_name_arm;
+							ConsoleLogger.warning("Skipping ARM based app, because they usually result in a crash");
+							throw new RipperRuntimeException(AndroidRipperStarter.class, "startRipping", "Skipping ARM based app, because they usually result in a crash");
 						} else {
 							throw new RipperRuntimeException(AndroidRipperStarter.class, "startRipping", "APK problem inspecting libs: unknown architecture!");
 						}
