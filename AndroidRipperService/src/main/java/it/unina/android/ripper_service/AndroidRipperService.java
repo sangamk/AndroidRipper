@@ -92,7 +92,7 @@ public class AndroidRipperService extends Service {
 	 * @param message Message
 	 */
 	public void send(Map<String, String> message) {
-		Log.v("AndroidRipperService", "send()");
+		Log.v("AndroidRipperService", "send() " +message);
 		server.send(message);
 	}
 
@@ -126,8 +126,7 @@ public class AndroidRipperService extends Service {
 
 	/**
 	 * Unregister all CallBacks.
-	 * 
-	 * @param cb
+	 *
 	 */
 	synchronized public void unregisterAll() {
 		mCallbacks.kill();
@@ -140,7 +139,7 @@ public class AndroidRipperService extends Service {
 	 * @param message Message
 	 */
 	synchronized protected void broadcast(Map<String, String> message) {
-		Log.v("AndroidRipperService", "broadcast()");
+		Log.v("AndroidRipperService", "broadcast() " + message);
 		final int N = mCallbacks.beginBroadcast();
 		for (int i = 0; i < N; i++) {
 			try {

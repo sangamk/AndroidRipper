@@ -438,16 +438,10 @@ public class RipperTestCase extends ActivityInstrumentationTestCase2 {
 			Log.v(TAG, "Coverage dumped");
 		} catch (ClassNotFoundException e) {
 			Log.e(TAG, "Is emma jar on classpath?", e);
-		} catch (SecurityException e) {
-			Log.e(TAG, "Failed to generate EMMA coverage: ", e);
-		} catch (NoSuchMethodException e) {
-			Log.e(TAG, "Failed to generate EMMA coverage: ", e);
-		} catch (IllegalArgumentException e) {
-			Log.e(TAG, "Failed to generate EMMA coverage: ", e);
 		} catch (IllegalAccessException e) {
-			Log.e(TAG,"Failed to generate EMMA coverage: ", e);
-		} catch (InvocationTargetException e) {
-			Log.e(TAG, "Failed to generate EMMA coverage: ", e);
+			Log.e(TAG, "Failed to generate EMMA coverage, no acces: ", e);
+		} catch (Exception e){
+            Log.e(TAG, "Failed to generate EMMA coverage: ", e);
 		}
 	}
 }

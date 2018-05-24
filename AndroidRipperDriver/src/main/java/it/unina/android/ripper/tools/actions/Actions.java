@@ -178,9 +178,10 @@ public class Actions {
 			public void run() {
 				try {
 					ripperActive = true;
+//					"am instrument -w -e coverageFile \"+  pathToCoverage + \" -e coverage true -e class it.unina.android.ripper.RipperTestCase it.unina.android.ripper/android.test.InstrumentationTestRunner")
 					String pathToCoverage = String.format("/mnt/sdcard/%s/%s_coverage.ec", AUT_PACKAGE, System.currentTimeMillis());
 					WrapProcess adb = AndroidTools.adb("-s", DEVICE, "shell",
-										"am instrument -w -e coverageFile "+  pathToCoverage + " -e coverage true -e class it.unina.android.ripper.RipperTestCase it.unina.android.ripper/android.test.InstrumentationTestRunner")
+										"am instrument -w  -e coverage true -e class it.unina.android.ripper.RipperTestCase it.unina.android.ripper/android.test.InstrumentationTestRunner")
 								.connectStdout(System.out).connectStderr(System.out).waitFor();
 					adb.waitFor();
 

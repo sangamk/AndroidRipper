@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 import it.unina.android.ripper.driver.exception.RipperException;
 import it.unina.android.ripper.driver.exception.RipperRuntimeException;
+import it.unina.android.ripper.logger.ConsoleLogger;
 import it.unina.android.shared.ripper.model.transition.Event;
 import it.unina.android.shared.ripper.model.transition.Input;
 import it.unina.android.shared.ripper.net.Message;
@@ -282,6 +283,8 @@ public class RipperServiceSocket {
 	{
 		if (checkSocketConnected() == false)
 			return;
+
+		ConsoleLogger.trace("Message: " + msg);
 
 		msg.addParameter("index", Long.toString(++curIndex));
 		
