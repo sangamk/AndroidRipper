@@ -59,7 +59,6 @@ public class AndroidRipper implements RipperEventListener {
 	 */
 	public static void main(String[] args) {
 
-
         boolean noProblem = false;
 
 		System.out.println("Android Ripper");
