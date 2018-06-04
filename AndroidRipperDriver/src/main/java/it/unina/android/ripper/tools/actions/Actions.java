@@ -110,7 +110,7 @@ public class Actions {
 					.connectStdout(System.out).connectStderr(System.out);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			// e.printStackTrace();
+			 e.printStackTrace();
 		}
 
 		sleepSeconds(ANDROID_RIPPER_SERVICE_WAIT_SECONDS);
@@ -193,6 +193,9 @@ public class Actions {
 					// TODO Auto-generated catch block
 					// e.printStackTrace();
 				} // .connectStdout(System.out).connectStderr(System.err);
+				catch (Exception e){
+					ConsoleLogger.error("Failed to start service!");
+				}
 			}
 		}.start();
 

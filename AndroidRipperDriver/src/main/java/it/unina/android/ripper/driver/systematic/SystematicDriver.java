@@ -35,6 +35,7 @@ import it.unina.android.ripper.driver.exception.AckNotReceivedException;
 import it.unina.android.ripper.driver.exception.NullMessageReceivedException;
 import it.unina.android.ripper.driver.exception.RipperRuntimeException;
 import it.unina.android.ripper.graphbuilder.Graph;
+import it.unina.android.ripper.logger.ConsoleLogger;
 import it.unina.android.ripper.net.RipperServiceSocket;
 import it.unina.android.ripper.planner.ConfigurationBasedPlanner;
 import it.unina.android.ripper.planner.Planner;
@@ -166,6 +167,7 @@ public class SystematicDriver extends AbstractDriver {
         long startup_time = 0;
 
         do {
+            ConsoleLogger.info("Events: " + nEvents  + " nTasks: " + nTasks + " NFails: " + nFails + " nRestart: " + nRestart);
             Task t = null;
 
             nRestart++;
@@ -327,6 +329,11 @@ public class SystematicDriver extends AbstractDriver {
             }
 
             this.uninstallAPKs(false);
+
+            if (nRestart > 25){
+                ConsoleLogger.error("Restart threshold exceeded");
+                running = false;
+            }
 
         } while (running && this.checkTerminationCriteria() == false);
 

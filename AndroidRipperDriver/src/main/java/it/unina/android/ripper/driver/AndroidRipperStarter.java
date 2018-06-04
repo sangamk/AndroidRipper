@@ -369,7 +369,10 @@ public class AndroidRipperStarter {
 							ConsoleLogger.warning("Skipping ARM based app, because they usually result in a crash");
 							throw new RipperRuntimeException(AndroidRipperStarter.class, "startRipping", "Skipping ARM based app, because they usually result in a crash");
 						} else {
-							throw new RipperRuntimeException(AndroidRipperStarter.class, "startRipping", "APK problem inspecting libs: unknown architecture!");
+							avd_name = avd_name_x86;
+							ConsoleLogger.error("APK problem inspecting libs: unknown architecture!");
+							ConsoleLogger.warning("Trying x86");
+//							throw new RipperRuntimeException(AndroidRipperStarter.class, "startRipping", "APK problem inspecting libs: unknown architecture!");
 						}
 					}
 				} catch (Exception ex) {

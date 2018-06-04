@@ -1253,7 +1253,7 @@ public abstract class AbstractDriver {
         }
 
         ConsoleLogger.info("Generate coverage");
-        boolean reportGenerated = Actions.generateCoverageReport(COVERAGE_PATH, "c:/Master/Thesis/AndroidRipperTool/instr-dataset/" + AUT_PACKAGE + "/coverage.em");
+        boolean reportGenerated = Actions.generateCoverageReport(COVERAGE_PATH, "./instr-dataset/" + AUT_PACKAGE + "/coverage.em");
 
         if (!reportGenerated) {
             return;

@@ -10,7 +10,7 @@ public class EmmaTools extends CommandLineTools{
 
     public static WrapProcess report(String... args) throws IOException {
 
-        List<String> emmaReportOptions = Arrays.asList("/c", "java", "-cp",  "\"C:/Master/Thesis/AndroidRipperTool/tools/emma.jar\"", "emma", "report", "-r", "txt,html,xml");
+        List<String> emmaReportOptions = Arrays.asList("/c", "java", "-cp",  "\"./tools/emma.jar\"", "emma", "report", "-r", "txt,html,xml");
         List<String> ecFilesOptions = Arrays.asList(args);
 
         List<String> emmaOptions = Stream.concat(emmaReportOptions.stream(), ecFilesOptions.stream())

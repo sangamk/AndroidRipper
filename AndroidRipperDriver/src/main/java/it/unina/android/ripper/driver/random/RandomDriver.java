@@ -29,6 +29,7 @@ import it.unina.android.ripper.driver.exception.NullMessageReceivedException;
 import it.unina.android.ripper.driver.exception.RipperRuntimeException;
 import it.unina.android.ripper.graphbuilder.Edge;
 import it.unina.android.ripper.graphbuilder.Graph;
+import it.unina.android.ripper.logger.ConsoleLogger;
 import it.unina.android.ripper.net.RipperServiceSocket;
 import it.unina.android.ripper.planner.Planner;
 import it.unina.android.ripper.scheduler.Scheduler;
@@ -156,6 +157,8 @@ public class RandomDriver extends AbstractDriver {
         long startup_time = 0;
 
         do {
+            ConsoleLogger.info("Events: " + nEvents  + " nTasks: " + nTasks + " NFails: " + nFails + " nRestart: " + nRestart);
+
             nRestart++;
 
             if (nRestart > RESTART_THRESHOLD && nEvents == 0) {
@@ -180,6 +183,11 @@ public class RandomDriver extends AbstractDriver {
 
             this.startup();
             startup_time += System.currentTimeMillis() - startup_time_t1;
+
+            if (nRestart > 25){
+                ConsoleLogger.error("Restart threshold exceeded");
+                running = false;
+            }
 
             if (running && started) {
                 this.startTestingTimeCounter();
@@ -286,6 +294,7 @@ public class RandomDriver extends AbstractDriver {
                                 notifyRipperLog("session limit reached : " + nEvents + "|" + NUM_EVENTS_PER_SESSION);
                                 break;
                             }
+
 
                             if (NEW_LOG_FREQUENCY > 0 && (nEvents % NEW_LOG_FREQUENCY == 0)) {
                                 endLogFile();
