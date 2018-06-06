@@ -335,9 +335,11 @@ public class RandomDriver extends AbstractDriver {
             try {
                 if (Actions.checkCurrentForegroundActivityPackage(AUT_PACKAGE)) {
                     waitAck();
-
-                    while (Actions.isRipperActive()) {
+                    int numberOfRetries = 0;
+                    while (Actions.isRipperActive() && numberOfRetries < 30) {
                         Actions.sleepMilliSeconds(500);
+                        numberOfRetries++;
+                        ConsoleLogger.warning("Retry -> " + numberOfRetries);
                     }
                 }
             } catch (AckNotReceivedException e) {

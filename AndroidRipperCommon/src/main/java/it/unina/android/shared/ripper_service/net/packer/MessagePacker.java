@@ -62,6 +62,8 @@ public class MessagePacker {
 		return null;
 	}
 
+
+
 	/**
 	 * UnPack Map from byte array
 	 * 
@@ -75,6 +77,7 @@ public class MessagePacker {
 
 			try {
 				Gson gson = new GsonBuilder().setLenient().create();
+
 				JsonParser parser = new JsonParser();
 				JsonObject o = parser.parse(s).getAsJsonObject();
 				Map<String, Object> map = new HashMap<String, Object>();
