@@ -751,6 +751,10 @@ public class Actions {
 		while (max_retry-- >= 0 || checkCurrentForegroundActivityPackage(pack) == false) {
 			try {
 				Thread.sleep(1000);
+				if(max_retry <= -15){
+					ConsoleLogger.error("Exceeded wait time... activity did not start");
+					break;
+				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				// e.printStackTrace();
