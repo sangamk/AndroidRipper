@@ -29,6 +29,7 @@ import it.unina.android.ripper.driver.exception.NullMessageReceivedException;
 import it.unina.android.ripper.driver.exception.RipperRuntimeException;
 import it.unina.android.ripper.graphbuilder.Edge;
 import it.unina.android.ripper.graphbuilder.Graph;
+import it.unina.android.ripper.logger.ConsoleLogger;
 import it.unina.android.ripper.net.RipperServiceSocket;
 import it.unina.android.ripper.planner.Planner;
 import it.unina.android.ripper.scheduler.Scheduler;
@@ -326,9 +327,11 @@ public class RandomDriver extends AbstractDriver {
             try {
                 if (Actions.checkCurrentForegroundActivityPackage(AUT_PACKAGE)) {
                     waitAck();
-
-                    while (Actions.isRipperActive()) {
+                    int numberOfRetries = 0;
+                    while (Actions.isRipperActive() && numberOfRetries < 30) {
                         Actions.sleepMilliSeconds(500);
+                        numberOfRetries++;
+                        ConsoleLogger.warning("Retry -> " + numberOfRetries);
                     }
                 }
             } catch (AckNotReceivedException e) {

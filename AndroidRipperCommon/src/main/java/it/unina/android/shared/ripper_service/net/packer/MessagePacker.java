@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -61,6 +62,8 @@ public class MessagePacker {
 		return null;
 	}
 
+
+
 	/**
 	 * UnPack Map from byte array
 	 * 
@@ -73,7 +76,8 @@ public class MessagePacker {
 			String s = new String(b);
 
 			try {
-				Gson gson = new Gson();
+				Gson gson = new GsonBuilder().setLenient().create();
+
 				JsonParser parser = new JsonParser();
 				JsonObject o = parser.parse(s).getAsJsonObject();
 				Map<String, Object> map = new HashMap<String, Object>();
