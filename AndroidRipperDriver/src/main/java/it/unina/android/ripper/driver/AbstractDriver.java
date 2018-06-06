@@ -29,6 +29,7 @@ import it.unina.android.ripper.driver.exception.NullMessageReceivedException;
 import it.unina.android.ripper.driver.exception.RipperRuntimeException;
 import it.unina.android.ripper.graphbuilder.Edge;
 import it.unina.android.ripper.graphbuilder.Graph;
+import it.unina.android.ripper.graphbuilder.Node;
 import it.unina.android.ripper.logger.ConsoleLogger;
 import it.unina.android.ripper.net.RipperServiceSocket;
 import it.unina.android.ripper.observer.RipperEventListener;
@@ -1135,6 +1136,10 @@ public abstract class AbstractDriver {
 
         for (Edge value : graph.getEdges().values()) {
             reportXML += "\"" + value.getSource().getId() + "\" -> \"" + value.getTarget().getId() + "\"[label=" +((Event)value.getTransition().get(0)).getInteraction() + "]\n";
+        }
+
+        for (Node foundScreen : graph.foundScreens) {
+            reportXML += "\"" + foundScreen.getActivityDescription().getId() + "\"";
         }
 
         reportXML += "}";

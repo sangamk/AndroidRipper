@@ -351,8 +351,6 @@ public class RandomDriver extends AbstractDriver {
 
         } while (running && this.checkTerminationCriteria() == false);
 
-        this.handleEndOfLoop();
-
         long executionTime = System.currentTimeMillis() - t1;
 
         this.notifyRipperLog("Execution Time: " + executionTime);
@@ -372,6 +370,8 @@ public class RandomDriver extends AbstractDriver {
         writeGraphFile(graph);
 
         writeDotGraphFile(graph);
+
+        this.handleEndOfLoop();
 
         this.notifyRipperEnded();
     }

@@ -35,6 +35,7 @@ import it.unina.android.ripper.driver.exception.AckNotReceivedException;
 import it.unina.android.ripper.driver.exception.NullMessageReceivedException;
 import it.unina.android.ripper.driver.exception.RipperRuntimeException;
 import it.unina.android.ripper.graphbuilder.Graph;
+import it.unina.android.ripper.graphbuilder.Node;
 import it.unina.android.ripper.logger.ConsoleLogger;
 import it.unina.android.ripper.net.RipperServiceSocket;
 import it.unina.android.ripper.planner.ConfigurationBasedPlanner;
@@ -251,6 +252,8 @@ public class SystematicDriver extends AbstractDriver {
 
                         //handle ads
                         ActivityDescription ad = getCurrentDescriptionAsActivityDescription();
+                        graph.foundScreens.add(new Node(ad));
+
                         do {
                             if (ad != null && ad.getClassName() != null && ad.getClassName().equals("com.google.android.gms.ads.AdActivity")) {
                                 try {
@@ -330,7 +333,7 @@ public class SystematicDriver extends AbstractDriver {
 
             this.uninstallAPKs(false);
 
-            if (nRestart > 25){
+            if (nRestart > 35){
                 ConsoleLogger.error("Restart threshold exceeded");
                 running = false;
             }
@@ -356,6 +359,8 @@ public class SystematicDriver extends AbstractDriver {
         writeReportFile(reportXML);
         writeGraphFile(graph);
         writeDotGraphFile(graph);
+
+        this.handleEndOfLoop();
 
         this.notifyRipperEnded();
     }
