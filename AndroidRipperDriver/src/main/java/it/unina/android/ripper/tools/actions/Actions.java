@@ -552,6 +552,7 @@ public class Actions {
 	 */
 	public static void waitDeviceClosed() {
 		boolean waitingDeviceClose = false;
+		int seconds = 0;
 
 		do {
 
@@ -585,6 +586,17 @@ public class Actions {
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				// e.printStackTrace();
+			}
+			seconds++;
+
+			if (seconds > 30){
+				ConsoleLogger.error("Could not close emulator... force closing");
+				Runtime rt = Runtime.getRuntime();
+				try {
+					Process pr = rt.exec("taskkill /im qemu-system-i386.exe /F");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 
 		} while (waitingDeviceClose);
@@ -1075,9 +1087,6 @@ public class Actions {
 
     public static boolean pullCoverageFiles(String aut_package, String destination) {
         try {
-
-
-
             String baseCoverageLocation = "/mnt/sdcard/" + aut_package + "/";
             String tempCoverageLocation = baseCoverageLocation+"/coverage/";
 

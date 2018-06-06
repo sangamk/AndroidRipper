@@ -184,7 +184,7 @@ public class RandomDriver extends AbstractDriver {
             this.startup();
             startup_time += System.currentTimeMillis() - startup_time_t1;
 
-            if (nRestart > 25){
+            if (nRestart > 19){
                 ConsoleLogger.error("Restart threshold exceeded");
                 running = false;
             }

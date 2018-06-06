@@ -1269,6 +1269,16 @@ public abstract class AbstractDriver {
 
         ConsoleLogger.info("Deleting coverage files...");
         Actions.removeCoverageFiles(AUT_PACKAGE);
+
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter("succes.log", true));
+            writer.write(AUT_PACKAGE);
+            writer.newLine();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

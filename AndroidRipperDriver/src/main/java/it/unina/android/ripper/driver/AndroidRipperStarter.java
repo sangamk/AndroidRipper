@@ -233,7 +233,6 @@ public class AndroidRipperStarter {
 			String wait_after_manual_sequence = conf.getProperty("sleep_after_manual_sequence", "0");
 			String log_level = conf.getProperty("log_level", "INFO");
 
-			InitialiseConsoleLogger(log_level);
 
 			if (target != null && target.equals("device") && (device == null || device.equals(""))) {
 				throw new RipperRuntimeException(AndroidRipperStarter.class, "startRipping", "No Device SET!");
@@ -253,6 +252,7 @@ public class AndroidRipperStarter {
 
 			new File(base_result_dir).mkdirs();
 
+
 			// temp path
 			String tempPath = base_result_dir + "/temp";
 			new File(tempPath).mkdir();
@@ -260,7 +260,9 @@ public class AndroidRipperStarter {
 			String logcatPath = base_result_dir + "/logcat/";
 			String xmlOutputPath = base_result_dir + "/model/";
 			String coveragePath = base_result_dir + "/coverage/";
-		
+
+			InitialiseConsoleLogger(log_level, base_result_dir, apkName);
+
 			// installer parameters
 			String aut_apk = apkToTest;
 			String extractorClass = "SimpleNoValuesExtractor";
@@ -367,7 +369,7 @@ public class AndroidRipperStarter {
 								|| ZipUtils.containsDirectory(aut_apk, "lib/arm64-v8a")) {
 							avd_name = avd_name_arm;
 							ConsoleLogger.warning("Skipping ARM based app, because they usually result in a crash");
-//							throw new RipperRuntimeException(AndroidRipperStarter.class, "startRipping", "Skipping ARM based app, because they usually result in a crash");
+							throw new RipperRuntimeException(AndroidRipperStarter.class, "startRipping", "Skipping ARM based app, because they usually result in a crash");
 						} else {
 							avd_name = avd_name_x86;
 							ConsoleLogger.error("APK problem inspecting libs: unknown architecture!");
@@ -585,9 +587,11 @@ public class AndroidRipperStarter {
 
 	}
 
-	private void InitialiseConsoleLogger(String logLevel) {
+	private void InitialiseConsoleLogger(String logLevel, String baseDir, String apkName) {
 		try {
 			ConsoleLogger.level(ConsoleLoggerLevel.valueOf(logLevel));
+			ConsoleLogger.outputFolder(baseDir);
+			ConsoleLogger.apk(apkName);
 			ConsoleLogger.info("Console logger set to level "+logLevel);
 		}catch (Exception e){
 			ConsoleLogger.error("Invalid log level");
