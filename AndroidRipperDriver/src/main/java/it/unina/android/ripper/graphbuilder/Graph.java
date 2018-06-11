@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Graph {
-    public Set<Node> foundScreens = new HashSet<>();
+    private Set<String> foundScreens = new HashSet<>();
     private HashMap<String, Edge> edges = new HashMap<>();
 
     public boolean addEdge(Edge edge){
@@ -36,5 +36,13 @@ public class Graph {
 
     public HashMap<String, Edge> getEdges() {
         return edges;
+    }
+
+    public boolean addScreen(Node screen){
+        return foundScreens.add(screen.getActivityDescription().getClassName());
+    }
+
+    public Set<String> getFoundScreens(){
+        return foundScreens;
     }
 }

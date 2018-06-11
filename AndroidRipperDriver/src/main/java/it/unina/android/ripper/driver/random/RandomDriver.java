@@ -29,6 +29,7 @@ import it.unina.android.ripper.driver.exception.NullMessageReceivedException;
 import it.unina.android.ripper.driver.exception.RipperRuntimeException;
 import it.unina.android.ripper.graphbuilder.Edge;
 import it.unina.android.ripper.graphbuilder.Graph;
+import it.unina.android.ripper.graphbuilder.Node;
 import it.unina.android.ripper.logger.ConsoleLogger;
 import it.unina.android.ripper.net.RipperServiceSocket;
 import it.unina.android.ripper.planner.Planner;
@@ -227,6 +228,8 @@ public class RandomDriver extends AbstractDriver {
                                     //e.printStackTrace();
                                 }
                                 Actions.sleepMilliSeconds(1000);
+                            }else{
+                                break;
                             }
                         } while (activity == null || (activity != null && activity.getWidgets().size() == 0));
 
@@ -272,7 +275,12 @@ public class RandomDriver extends AbstractDriver {
                                     nEvents++;
                                     notifyRipperLog("#Events = " + nEvents);
                                     ActivityDescription current = describeActivity();
+                                    graph.addScreen(new Node(current));
                                     graph.addEdge(activity, t, current);
+
+                                    writeGraphFile(graph);
+
+                                    writeDotGraphFile(graph);
 
 
                                 } else if ((msg != null && msg.isTypeOf(MessageType.FAIL_MESSAGE))) {
@@ -368,9 +376,7 @@ public class RandomDriver extends AbstractDriver {
         reportXML += "</report>";
 
         writeReportFile(reportXML);
-
         writeGraphFile(graph);
-
         writeDotGraphFile(graph);
 
         this.handleEndOfLoop();

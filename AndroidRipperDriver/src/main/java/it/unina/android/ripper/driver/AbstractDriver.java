@@ -1148,8 +1148,8 @@ public abstract class AbstractDriver {
             reportXML += "\"" + value.getSource().getId() + "\" -> \"" + value.getTarget().getId() + "\"[label=" +((Event)value.getTransition().get(0)).getInteraction() + "]\n";
         }
 
-        for (Node foundScreen : graph.foundScreens) {
-            reportXML += "\"" + foundScreen.getActivityDescription().getId() + "\"";
+        for (String foundScreen : graph.getFoundScreens()) {
+            reportXML += "\"" + foundScreen + "\"";
         }
 
         reportXML += "}";

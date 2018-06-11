@@ -251,8 +251,9 @@ public class SystematicDriver extends AbstractDriver {
                     if (bootstrapDone == false || aTaskHasBeenExecuted == true) {
 
                         //handle ads
+                        ActivityDescription lastActivityDescription = getLastActivityDescription();
                         ActivityDescription ad = getCurrentDescriptionAsActivityDescription();
-                        graph.foundScreens.add(new Node(ad));
+                        graph.addScreen(new Node(ad));
 
                         do {
                             if (ad != null && ad.getClassName() != null && ad.getClassName().equals("com.google.android.gms.ads.AdActivity")) {
@@ -285,7 +286,10 @@ public class SystematicDriver extends AbstractDriver {
 
                             notifyRipperLog("Scheduled Tasks : " + scheduler.getTaskList().size());
 
-                            graph.addEdge(getLastActivityDescription(), t, getCurrentDescriptionAsActivityDescription());
+                            graph.addEdge(lastActivityDescription, t, ad);
+
+                            writeGraphFile(graph);
+                            writeDotGraphFile(graph);
 
                             appendStatesDescriptionFile(getLastActivityDescription());
                         }
@@ -333,7 +337,7 @@ public class SystematicDriver extends AbstractDriver {
 
             this.uninstallAPKs(false);
 
-            if (nRestart > 35){
+            if (nRestart > 29){
                 ConsoleLogger.error("Restart threshold exceeded");
                 running = false;
             }
@@ -430,6 +434,11 @@ public class SystematicDriver extends AbstractDriver {
 
                 //handle ads
                 do {
+                    if(ad == null){
+                        throw new RuntimeException("AUT not in foreground!");
+                    }
+
+
                     if (ad != null && ad.getClassName() != null && ad.getClassName().equals("com.google.android.gms.ads.AdActivity")) {
                         try {
                             notifyRipperLog("Google ADS Activity detected : BACK!");
@@ -447,9 +456,10 @@ public class SystematicDriver extends AbstractDriver {
                         ad = this.getLastActivityDescription();
                         ad.setId(statesList.getEquivalentActivityStateId(ad));
                         this.appendLineToLogFile(this.ripperOutput.outputActivityDescription(ad));
-
+                    }else {
+                        break;
                     }
-                } while (ad == null || (ad != null && ad.getWidgets().size() == 0));
+                } while (ad != null && ad.getWidgets().size() == 0);
                 //handle ads
 
                 if (checkBeforeEventStateId(ad, evt)) {
