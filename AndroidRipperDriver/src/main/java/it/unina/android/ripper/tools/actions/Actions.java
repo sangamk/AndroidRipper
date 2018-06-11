@@ -547,6 +547,32 @@ public class Actions {
 		ConsoleLogger.info("Device " + DEVICE + " Booted!");
 	}
 
+	public static boolean isEmulatorRunning(){
+		try {
+			final Process p = Runtime.getRuntime().exec("adb devices");
+
+			try {
+				String line = "";
+				BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				while ((line = input.readLine()) != null) {
+					if (line != null && line.contains(DEVICE)) {
+						if (line.contains("device")) {
+							return true;
+						}
+					}
+				}
+				input.close();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
+			p.waitFor();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return false;
+	}
+
 	/**
 	 * Wait for an device to be closed
 	 */
@@ -589,7 +615,7 @@ public class Actions {
 			}
 			seconds++;
 
-			if (seconds > 30){
+			if (seconds > 20){
 				ConsoleLogger.error("Could not close emulator... force closing");
 				Runtime rt = Runtime.getRuntime();
 				try {
@@ -766,7 +792,7 @@ public class Actions {
 		while (max_retry-- >= 0 || checkCurrentForegroundActivityPackage(pack) == false) {
 			try {
 				Thread.sleep(1000);
-				if(max_retry <= -15){
+				if(max_retry <= -5){
 					ConsoleLogger.error("Exceeded wait time... activity did not start");
 					break;
 				}

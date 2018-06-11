@@ -612,6 +612,7 @@ public abstract class AbstractDriver {
      */
     public boolean ping() {
         int pingRetryCount = 0;
+        int waitAppReady = 0;
 
         try {
             do {
@@ -621,6 +622,11 @@ public abstract class AbstractDriver {
                 if (m != null && m.getType().equals(MessageType.PONG_MESSAGE)) {
                     return true;
                 } else if (m != null && m.getType().equals(MessageType.WAIT_APP_READY)) {
+                    waitAppReady++;
+                    if (waitAppReady > 10){
+                        ConsoleLogger.error("App not showing app");
+                        return false;
+                    }
                     continue;
                 } else if (m != null && m.getType().equals(MessageType.PONG_MESSAGE) == false) {
                     notifyRipperLog("Message != PONG -> " + m.getType());
@@ -778,6 +784,10 @@ public abstract class AbstractDriver {
     public void startupDevice() {
 
         // start the device
+        if (Actions.isEmulatorRunning()){
+            ConsoleLogger.warning("Emulator is already running .. shtting down");
+            device.stop();
+        }
         device.start();
         device.waitForDevice();
 
