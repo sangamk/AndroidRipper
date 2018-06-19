@@ -25,47 +25,105 @@ package it.unina.android.ripper.driver.device;
   @author Nicola Amatucci - REvERSE
 
  */
+
+import it.unina.android.ripper.logger.ConsoleLogger;
 import it.unina.android.ripper.tools.actions.Actions;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AndroidVirtualDevice extends AbstractDevice {
 
-	private int port = 5554;
-	
-	public AndroidVirtualDevice(String name, int port) {
-		super(name);
-		this.name = name;
-		this.port = port;
-		this.needsSu = false;
-		this.rooted = true;
-		
-		Actions.DEVICE = getName();
-	}
+    private int port = 5554;
+    private String pid = "";
 
-	@Override
-	public void start() {
-		System.out.println("Start AVD...");
-		Actions.startEmulatorNoSnapshotLoadSave(name, port);
-	}
+    public AndroidVirtualDevice(String name, int port) {
+        super(name);
+        this.name = name;
+        this.port = port;
+        this.needsSu = false;
+        this.rooted = true;
 
-	@Override
-	public void stop() {
-		System.out.println("Shutdown AVD...");
-		Actions.killEmulator();
-		Actions.waitDeviceClosed();
-	}
+        Actions.DEVICE = getName();
+    }
 
-	@Override
-	public String getName() {
-		return "emulator-"+port;
-	}
+    @Override
+    public void start() {
+        pid = "";
+        System.out.println("Start AVD..." + port);
+        Set<String> runningInstances = getEmulatorPid();
+        Actions.startEmulatorNoSnapshotLoadSave(name, port);
 
-	@Override
-	public String getIpAddress() {
-		return "localhost";
-	}
-	
-	@Override
-	public boolean isVirtualDevice() {
-		return true;
-	}
+//        Actions.waitForDeviceBoot();
+        if (runningInstances.isEmpty()) {
+            pid = getEmulatorPid().iterator().next();
+            ConsoleLogger.debug("Found emulator PID " + pid);
+        } else {
+            Set<String> afterStart = getEmulatorPid();
+            afterStart.removeAll(runningInstances);
+            if (afterStart.isEmpty()) {
+                ConsoleLogger.error("Stopping emulator, found multiple PID during startup");
+                stop();
+            } else {
+                pid = afterStart.iterator().next();
+                ConsoleLogger.debug("Found emulator PID " + pid);
+            }
+        }
+    }
+
+    @Override
+    public void stop() {
+        System.out.println("Shutdown AVD...");
+        Actions.killEmulator();
+        Actions.waitDeviceClosed(pid);
+    }
+
+    @Override
+    public String getName() {
+        return "emulator-" + port;
+    }
+
+    @Override
+    public String getIpAddress() {
+        return "localhost";
+    }
+
+    @Override
+    public boolean isVirtualDevice() {
+        return true;
+    }
+
+    private Set<String> getEmulatorPid() {
+        Set<String> pids = new HashSet<>();
+        ConsoleLogger.debug("Check PID");
+        Runtime rt = Runtime.getRuntime();
+        Process proc = null;
+        String[] commands = {"wmic", "process", "where", "caption=\"qemu-system-i386.exe\"", "get", "ProcessId"};
+        try {
+            proc = rt.exec(commands);
+            BufferedReader stdInput = new BufferedReader(new
+                    InputStreamReader(proc.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new
+                    InputStreamReader(proc.getErrorStream()));
+
+            String s = null;
+            while ((s = stdInput.readLine()) != null) {
+                if (s.trim().matches("-?\\d+")) {
+                    ConsoleLogger.debug("Found PID: " + s);
+                    pids.add(s.trim());
+                }
+            }
+
+            while ((s = stdError.readLine()) != null) {
+                ConsoleLogger.error(s);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return pids;
+    }
 }

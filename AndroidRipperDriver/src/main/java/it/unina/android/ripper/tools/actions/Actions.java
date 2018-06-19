@@ -575,8 +575,9 @@ public class Actions {
 
 	/**
 	 * Wait for an device to be closed
+	 * @param pid
 	 */
-	public static void waitDeviceClosed() {
+	public static void waitDeviceClosed(String pid) {
 		boolean waitingDeviceClose = false;
 		int seconds = 0;
 
@@ -615,11 +616,12 @@ public class Actions {
 			}
 			seconds++;
 
-			if (seconds > 20){
+			if (seconds > 20 && !pid.isEmpty()){
 				ConsoleLogger.error("Could not close emulator... force closing");
 				Runtime rt = Runtime.getRuntime();
 				try {
-					Process pr = rt.exec("taskkill /im qemu-system-i386.exe /F");
+//					Process pr = rt.exec("taskkill /im qemu-system-i386.exe /F");
+					Process pr = rt.exec("taskkill /PID "+pid+" /F");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -1132,7 +1134,7 @@ public class Actions {
             moveFiles.waitFor();
 
 			ConsoleLogger.debug("Destination " + destination);
-            WrapProcess p = AndroidTools.adb("pull", tempCoverageLocation, destination);
+            WrapProcess p = AndroidTools.adb("-s", DEVICE, "pull", tempCoverageLocation, destination);
             printOutput(p);
             p.waitFor();
 

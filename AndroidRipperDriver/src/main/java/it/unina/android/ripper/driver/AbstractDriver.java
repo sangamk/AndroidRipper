@@ -1149,7 +1149,7 @@ public abstract class AbstractDriver {
         }
 
         for (String foundScreen : graph.getFoundScreens()) {
-            reportXML += "\"" + foundScreen + "\"";
+            reportXML += "\"" + foundScreen + "\"\n";
         }
 
         reportXML += "}";

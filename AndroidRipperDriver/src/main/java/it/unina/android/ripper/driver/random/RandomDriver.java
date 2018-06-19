@@ -229,11 +229,16 @@ public class RandomDriver extends AbstractDriver {
                                 }
                                 Actions.sleepMilliSeconds(1000);
                             }else{
+                                ConsoleLogger.warning("No ads on foreground");
                                 break;
                             }
                         } while (activity == null || (activity != null && activity.getWidgets().size() == 0));
 
                         if (activity != null) {
+                            graph.addScreen(new Node(activity));
+                            writeGraphFile(graph);
+
+                            writeDotGraphFile(graph);
 
                             this.appendLineToLogFile(this.ripperOutput.outputActivityDescription(activity));
 
@@ -275,9 +280,8 @@ public class RandomDriver extends AbstractDriver {
                                     nEvents++;
                                     notifyRipperLog("#Events = " + nEvents);
                                     ActivityDescription current = describeActivity();
-                                    graph.addScreen(new Node(current));
-                                    graph.addEdge(activity, t, current);
 
+                                    graph.addEdge(activity, t, current);
                                     writeGraphFile(graph);
 
                                     writeDotGraphFile(graph);

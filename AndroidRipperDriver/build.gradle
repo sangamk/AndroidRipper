@@ -12,7 +12,6 @@ dependencies {
     implementation files('libs/commons-lang3-3.5.jar')
     implementation project(':AndroidRipperCommon')
     compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.17.1'
-
 }
 
 jar {

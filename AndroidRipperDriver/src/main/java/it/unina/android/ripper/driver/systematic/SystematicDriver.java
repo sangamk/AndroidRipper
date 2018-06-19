@@ -255,6 +255,9 @@ public class SystematicDriver extends AbstractDriver {
                         ActivityDescription ad = getCurrentDescriptionAsActivityDescription();
                         graph.addScreen(new Node(ad));
 
+                        writeGraphFile(graph);
+
+                        writeDotGraphFile(graph);
                         do {
                             if (ad != null && ad.getClassName() != null && ad.getClassName().equals("com.google.android.gms.ads.AdActivity")) {
                                 try {
@@ -274,6 +277,9 @@ public class SystematicDriver extends AbstractDriver {
                                 ad.setId(statesList.getEquivalentActivityStateId(ad));
                                 this.appendLineToLogFile(this.ripperOutput.outputActivityDescription(ad));
 
+                            }else {
+                                ConsoleLogger.warning("No ads on foreground");
+                                break;
                             }
                         } while (ad == null || (ad != null && ad.getWidgets().size() == 0));
                         //handle ads
@@ -457,6 +463,7 @@ public class SystematicDriver extends AbstractDriver {
                         ad.setId(statesList.getEquivalentActivityStateId(ad));
                         this.appendLineToLogFile(this.ripperOutput.outputActivityDescription(ad));
                     }else {
+                        ConsoleLogger.warning("No ads on foreground");
                         break;
                     }
                 } while (ad != null && ad.getWidgets().size() == 0);
